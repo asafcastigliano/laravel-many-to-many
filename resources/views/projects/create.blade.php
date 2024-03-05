@@ -13,6 +13,15 @@
             @endforeach
         </select>
 
+        @foreach ($technologies as $technology)
+            <label>
+                <input type="checkbox" name="technologies[]" value="{{ $technology->id }}"
+                    {{ in_array($technology->id, $project->technologies->pluck('id')->toArray()) ? 'checked' : '' }}>
+                {{ $technology->name }}
+            </label>
+        @endforeach
+
+
         <button type="submit">Add Project</button>
     </form>
 @endsection

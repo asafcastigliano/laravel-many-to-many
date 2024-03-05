@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Models\Project;
 use App\Models\Type;
+use App\Models\Technology;
 
 class ProjectController extends Controller
 {
@@ -19,7 +20,8 @@ class ProjectController extends Controller
     {
         $projects = Project::all();
         $types = Type::all();
-        return view('projects.index', compact('projects', 'types'));
+        $technologies = Technology::all();
+        return view('projects.index', compact('projects', 'types', 'technologies'));
     }
 
     /**
