@@ -19,7 +19,7 @@ class ProjectController extends Controller
     {
         $projects = Project::all();
         $types = Type::all();
-        return view('auth.dashboard', compact('projects', 'types'));
+        return view('projects.index', compact('projects', 'types'));
     }
 
     /**
