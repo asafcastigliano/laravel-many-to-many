@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
 use App\Models\Project;
 use App\Models\Type;
 use App\Models\Technology;
@@ -13,8 +12,6 @@ class ProjectController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index()
     {
@@ -26,20 +23,16 @@ class ProjectController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function create()
     {
         $types = Type::all();
-        return view('projects.create', compact('types'));
+        $technologies = Technology::all();
+        return view('projects.create', compact('types', 'technologies'));
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
@@ -47,43 +40,37 @@ class ProjectController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'type_id' => 'required|exists:types,id',
+            'technology_id' => 'exists:technologies,id',
         ]);
 
-        Project::create($request->all());
+        $project = Project::create($request->all());
+
+        $project->technologies()->sync($request->technology_id);
 
         return redirect()->route('projects.index')->with('success', 'Project created successfully');
     }
 
     /**
      * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $project = Project::with('type')->findOrFail($id);
+        $project = Project::with(['type', 'technologies'])->findOrFail($id);
         return view('projects.show', compact('project'));
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Project  $project
-     * @return \Illuminate\Http\Response
      */
     public function edit(Project $project)
     {
         $types = Type::all();
-        return view('projects.edit', compact('project', 'types'));
+        $technologies = Technology::all();
+        return view('projects.edit', compact('project', 'types', 'technologies'));
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Project  $project
-     * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Project $project)
     {
@@ -91,18 +78,18 @@ class ProjectController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'type_id' => 'required|exists:types,id',
+            'technology_id' => 'exists:technologies,id',
         ]);
 
         $project->update($request->all());
+
+        $project->technologies()->sync($request->technology_id);
 
         return redirect()->route('projects.index')->with('success', 'Project updated successfully');
     }
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
