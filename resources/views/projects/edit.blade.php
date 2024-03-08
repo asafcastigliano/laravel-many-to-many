@@ -38,5 +38,10 @@
 
             <button type="submit">Aggiorna</button>
         </form>
+        <form method="POST" action="{{ route('projects.destroy', $project) }}">
+            @csrf
+            @method('DELETE')
+            <button type="submit">Cancella Progetto</button>
+        </form>
     </div>
 @endsection
