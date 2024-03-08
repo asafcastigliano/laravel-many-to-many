@@ -24,11 +24,11 @@ class ProjectController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Project $project)
     {
         $types = Type::all();
         $technologies = Technology::all();
-        return view('projects.create', compact('types', 'technologies'));
+        return view('projects.create', compact('project', 'types', 'technologies'));
     }
 
     /**
@@ -43,9 +43,9 @@ class ProjectController extends Controller
             'technology_id.*' => 'exists:technologies,id',
         ]);
     
-        $project = Project::create($request->except('technology_id'));
+        $project = Project::create($request->except('technologies'));
     
-        $project->technologies()->sync($request->technology_id);
+        $project->technologies()->sync($request->technologies);
     
         return redirect()->route('projects.index')->with('success', 'Project created successfully');
     }
@@ -78,19 +78,20 @@ class ProjectController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'type_id' => 'required|exists:types,id',
-            'technology_id.*' => 'exists:technologies,id',
+            'technologies' => 'array',
+            'technologies.*' => 'exists:technologies,id',
         ]);
     
-        $project->update($request->except('technology_id'));
+        $project->update($request->except('technologies'));
     
-        $project->technologies()->sync($request->technology_id);
+        $project->technologies()->sync($request->technologies);
     
         return redirect()->route('projects.index')->with('success', 'Project updated successfully');
     }
 
     /**
-     * Remove the specified resource from storage.
-     */
+    * Remove the specified resource from storage.
+    */
     public function destroy($id)
     {
         $project = Project::findOrFail($id);
