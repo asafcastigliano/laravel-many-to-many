@@ -40,13 +40,13 @@ class ProjectController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'type_id' => 'required|exists:types,id',
-            'technology_id' => 'exists:technologies,id',
+            'technology_id.*' => 'exists:technologies,id',
         ]);
-
-        $project = Project::create($request->all());
-
+    
+        $project = Project::create($request->except('technology_id'));
+    
         $project->technologies()->sync($request->technology_id);
-
+    
         return redirect()->route('projects.index')->with('success', 'Project created successfully');
     }
 
@@ -78,13 +78,13 @@ class ProjectController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'type_id' => 'required|exists:types,id',
-            'technology_id' => 'exists:technologies,id',
+            'technology_id.*' => 'exists:technologies,id',
         ]);
-
-        $project->update($request->all());
-
+    
+        $project->update($request->except('technology_id'));
+    
         $project->technologies()->sync($request->technology_id);
-
+    
         return redirect()->route('projects.index')->with('success', 'Project updated successfully');
     }
 
